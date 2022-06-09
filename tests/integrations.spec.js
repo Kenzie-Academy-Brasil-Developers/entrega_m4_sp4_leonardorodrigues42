@@ -106,8 +106,7 @@ describe("Testes rota /products", () => {
   it("Testando delecao de um produto", async () => {
     const response = await request(app).delete(`/products/${testProduct.id}`);
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBeDefined();
+    expect(response.status).toBe(204);
   });
 
   it("Testando delecao de uma categoria", async () => {
@@ -115,13 +114,9 @@ describe("Testes rota /products", () => {
       `/categories/${testCategory.id}`
     );
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBeDefined();
+    expect(response.status).toBe(204);
   });
 });
-
-//// Testes antigos VVV
-
 
 
 describe("Testando casos de erro nas rotas /categories e /products", () => {
