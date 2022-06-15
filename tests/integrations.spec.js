@@ -1,19 +1,19 @@
 import app from "../src/app";
 import request from "supertest";
 
-describe("Testing success cases in the routes", () => {
-  let testCategory = {
-    name: `Categoria Teste ${Math.floor(Math.random() * 10001)}`,
-  };
+let testCategory = {
+  name: `Categoria Teste ${Math.floor(Math.random() * 10001)}`,
+};
 
-  let testProduct = {
-    name: `Produto Teste ${Math.floor(Math.random() * 10001)}`,
-    price: `${Math.floor(Math.random() * 1001)}.${
-      Math.floor(Math.random() * 90) + 10
-    }`,
-  };
+let testProduct = {
+  name: `Produto Teste ${Math.floor(Math.random() * 10001)}`,
+  price: `${Math.floor(Math.random() * 1001)}.${
+    Math.floor(Math.random() * 90) + 10
+  }`,
+};
 
-  it("Should be able to create a new category", async () => {
+describe("Testes rota /categories", () => {
+  it("Testando criacao de categoria", async () => {
     const response = await request(app).post("/categories").send(testCategory);
 
     testCategory.id = response.body.category.id;
@@ -25,7 +25,7 @@ describe("Testing success cases in the routes", () => {
     expect(response.body.category.name).toContain("Categoria Teste");
   });
 
-  it("Should be able to list all the categories", async () => {
+  it("Testando listagem de todas as categorias", async () => {
     const response = await request(app).get("/categories");
 
     expect(response.status).toBe(200);
@@ -33,14 +33,14 @@ describe("Testing success cases in the routes", () => {
     expect(response.body[0].name).toContain("Categoria Teste");
   });
 
-  it("Should be able to list one category", async () => {
+  it("Testando listagem de uma categoria", async () => {
     const response = await request(app).get(`/categories/${testCategory.id}`);
 
     expect(response.status).toBe(200);
     expect(response.body.name).toContain("Categoria Teste");
   });
 
-  it("Should be able to update one category", async () => {
+  it("Testando atualizacao de uma categoria especifica", async () => {
     const response = await request(app)
       .patch(`/categories/${testCategory.id}`)
       .send({
@@ -51,8 +51,11 @@ describe("Testing success cases in the routes", () => {
     expect(response.body.message).toBeDefined();
     expect(response.body.category.name).toContain("Atualizada");
   });
+})
 
-  it("Should be able to create a product", async () => {
+
+describe("Testes rota /products", () => {
+  it("Testando criacao de produto", async () => {
     const response = await request(app).post("/products").send(testProduct);
 
     testProduct.id = response.body.product.id;
@@ -63,7 +66,7 @@ describe("Testing success cases in the routes", () => {
     expect(response.body.product.name).toContain("Produto Teste");
   });
 
-  it("Should be able to list all the products", async () => {
+  it("Testando listagem de todas os produtos", async () => {
     const response = await request(app).get("/products");
 
     expect(response.status).toBe(200);
@@ -71,14 +74,14 @@ describe("Testing success cases in the routes", () => {
     expect(response.body[0].name).toContain("Produto Teste");
   });
 
-  it("Should be able to list one product", async () => {
+  it("Testando listagem de um produto", async () => {
     const response = await request(app).get(`/products/${testProduct.id}`);
 
     expect(response.status).toBe(200);
     expect(response.body.name).toContain("Produto Teste");
   });
 
-  it("Should be able to update one product", async () => {
+  it("Testando atualizacao de um produto especifico", async () => {
     const response = await request(app)
       .patch(`/products/${testProduct.id}`)
       .send({
@@ -90,7 +93,7 @@ describe("Testing success cases in the routes", () => {
     expect(response.body.product.name).toContain("Atualizado");
   });
 
-  it("Should be able to list products by categories", async () => {
+  it("Testando listagem de produtos por id da categoria", async () => {
     const response = await request(app).get(
       `/products/category/${testCategory.id}`
     );
@@ -100,24 +103,23 @@ describe("Testing success cases in the routes", () => {
     expect(response.body[0]).toHaveProperty("category");
   });
 
-  it("Should be able to delete one product", async () => {
+  it("Testando delecao de um produto", async () => {
     const response = await request(app).delete(`/products/${testProduct.id}`);
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBeDefined();
+    expect(response.status).toBe(204);
   });
 
-  it("Should be able to delete one category", async () => {
+  it("Testando delecao de uma categoria", async () => {
     const response = await request(app).delete(
       `/categories/${testCategory.id}`
     );
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBeDefined();
+    expect(response.status).toBe(204);
   });
 });
 
-describe("Testing error cases in the routes", () => {
+
+describe("Testando casos de erro nas rotas /categories e /products", () => {
   afterAll(async () => {
     await request(app).delete(`/products/${testProduct.id}`);
     await request(app).delete(`/categories/${testCategory.id}`);
@@ -134,7 +136,7 @@ describe("Testing error cases in the routes", () => {
     }`,
   };
 
-  it("Should not be able to create two categories with the same name", async () => {
+  it("Nao permite criacao de duas categorias com nomes iguais", async () => {
     const successResponse = await request(app)
       .post("/categories")
       .send(testCategory);
@@ -150,7 +152,7 @@ describe("Testing error cases in the routes", () => {
     expect(errorResponse.body.message).toBeDefined();
   });
 
-  it("Should not be able to create a products without sending a name", async () => {
+  it("Nao permite a criacao de um produto sem o nome", async () => {
     const response = await request(app)
       .post("/products")
       .send({ price: "1000.00", category_id: Number(testCategory.id) });
@@ -159,7 +161,7 @@ describe("Testing error cases in the routes", () => {
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to create a products without sending a price", async () => {
+  it("Nao permite a criacao de um produto sem o preco", async () => {
     const response = await request(app)
       .post("/products")
       .send({ name: "Produto teste", category_id: Number(testCategory.id) });
@@ -168,14 +170,14 @@ describe("Testing error cases in the routes", () => {
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to list one unexisting category", async () => {
+  it("Nao permite listar uma categoria inexistente", async () => {
     const response = await request(app).get("/categories/id_test");
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to update an unexisting category", async () => {
+  it("Nao permite atualizar uma categoria inexistente", async () => {
     const response = await request(app)
       .patch("/categories/id_test")
       .send({ name: "Teste" });
@@ -184,14 +186,14 @@ describe("Testing error cases in the routes", () => {
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to list one unexisting product", async () => {
+  it("Nao permite listar um produto inexistente", async () => {
     const response = await request(app).get("/products/id_test");
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to update an unexisting product", async () => {
+  it("Nao permite atualizar um produto inexistente", async () => {
     const response = await request(app)
       .patch("/products/id_test")
       .send({ name: "Teste" });
@@ -200,14 +202,14 @@ describe("Testing error cases in the routes", () => {
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to delete an unexisting category", async () => {
+  it("Nao permite deletar uma categoria inexistente", async () => {
     const response = await request(app).delete("/categories/id_test");
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBeDefined();
   });
 
-  it("Should not be able to delete an unexisting product", async () => {
+  it("Nao permite atualizar um produto inexistente", async () => {
     const response = await request(app).delete("/products/id_test");
 
     expect(response.status).toBe(400);
