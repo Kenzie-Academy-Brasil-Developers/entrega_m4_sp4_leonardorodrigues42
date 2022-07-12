@@ -209,7 +209,7 @@ describe("Testando casos de erro nas rotas /categories e /products", () => {
     expect(response.body.message).toBeDefined();
   });
 
-  it("Nao permite atualizar um produto inexistente", async () => {
+  it("Nao permite deletar um produto inexistente", async () => {
     const response = await request(app).delete("/products/id_test");
 
     expect(response.status).toBe(400);
